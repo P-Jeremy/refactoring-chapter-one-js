@@ -12,7 +12,7 @@ function statement(invoice, plays) {
     minimumFractionDigits: 2,
   }).format;
   for (let perf of invoice.performances) {
-    const play = plays[perf.playID];
+    const play = _playFor(perf);
 
     const thisAmount = _amountFor(perf, play);
 
@@ -30,28 +30,34 @@ function statement(invoice, plays) {
   result += `Amount owed is ${format(totalAmount / 100)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
   return result;
-}
 
-function _amountFor(performance, play) {
-  let result = 0;
-
-  switch (play.type) {
-    case 'tragedy':
-      result = 40000;
-      if (performance.audience > 30) {
-        result += 1000 * (performance.audience - 30);
-      }
-      break;
-    case 'comedy':
-      result = 30000;
-      if (performance.audience > 20) {
-        result += 10000 + 500 * (performance.audience - 20);
-      }
-      result += 300 * performance.audience;
-      break;
-    default:
-      throw new Error(`unknown type: ${play.type}`);
+  function _playFor(performance) {
+    const play = plays[performance.playID];
+    return play;
   }
-
-  return result;
+  
+  function _amountFor(performance, play) {
+    let result = 0;
+  
+    switch (play.type) {
+      case 'tragedy':
+        result = 40000;
+        if (performance.audience > 30) {
+          result += 1000 * (performance.audience - 30);
+        }
+        break;
+      case 'comedy':
+        result = 30000;
+        if (performance.audience > 20) {
+          result += 10000 + 500 * (performance.audience - 20);
+        }
+        result += 300 * performance.audience;
+        break;
+      default:
+        throw new Error(`unknown type: ${play.type}`);
+    }
+  
+    return result;
+  }
 }
+
