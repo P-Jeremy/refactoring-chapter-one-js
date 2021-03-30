@@ -3,7 +3,6 @@ module.exports = {
 };
 
 function statement(invoice, plays) {
-  let totalAmount = 0;
   let result = `Statement for ${invoice.customer}\n`;
   const format = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -11,14 +10,15 @@ function statement(invoice, plays) {
     minimumFractionDigits: 2,
   }).format;
 
+  let totalAmount = 0;
   for (let perf of invoice.performances) {
-    const thisAmount = _amountFor(perf);
     // print line for this order
-    result += `  ${_playFor(perf).name}: ${format(thisAmount / 100)} (${
+    result += `  ${_playFor(perf).name}: ${format(_amountFor(perf) / 100)} (${
       perf.audience
     } seats)\n`;
-    totalAmount += thisAmount;
+    totalAmount += _amountFor(perf);
   }
+
   result += `Amount owed is ${format(totalAmount / 100)}\n`;
   result += `You earned ${_totalVolumeCredits()} credits\n`;
   return result;
