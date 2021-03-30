@@ -4,17 +4,12 @@ module.exports = {
 
 function statement(invoice, plays) {
   let totalAmount = 0;
-  let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
   const format = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
   }).format;
-
-  for (let perf of invoice.performances) {
-    volumeCredits += _volumeCreditFor(perf);
-  }
 
   for (let perf of invoice.performances) {
     const thisAmount = _amountFor(perf);
@@ -25,13 +20,22 @@ function statement(invoice, plays) {
     totalAmount += thisAmount;
   }
   result += `Amount owed is ${format(totalAmount / 100)}\n`;
-  result += `You earned ${volumeCredits} credits\n`;
+  result += `You earned ${_totalVolumeCredits()} credits\n`;
   return result;
 
   function _volumeCreditFor(performance) {
     let result = Math.max(performance.audience - 30, 0);
     if ('comedy' === _playFor(performance).type) {
       result += Math.floor(performance.audience / 5);
+    }
+
+    return result;
+  }
+
+  function _totalVolumeCredits() {
+    let result = 0;
+    for (let perf of invoice.performances) {
+      result += _volumeCreditFor(perf);
     }
 
     return result;
