@@ -10,18 +10,25 @@ function statement(invoice, plays) {
     minimumFractionDigits: 2,
   }).format;
 
-  let totalAmount = 0;
   for (let perf of invoice.performances) {
     // print line for this order
     result += `  ${_playFor(perf).name}: ${format(_amountFor(perf) / 100)} (${
       perf.audience
     } seats)\n`;
-    totalAmount += _amountFor(perf);
   }
 
-  result += `Amount owed is ${format(totalAmount / 100)}\n`;
+  result += `Amount owed is ${format(_totalAmount() / 100)}\n`;
   result += `You earned ${_totalVolumeCredits()} credits\n`;
   return result;
+
+  function _totalAmount() {
+    let result = 0;
+    for (let perf of invoice.performances) {
+      result += _amountFor(perf);
+    }
+
+    return result;
+  }
 
   function _volumeCreditFor(performance) {
     let result = Math.max(performance.audience - 30, 0);
