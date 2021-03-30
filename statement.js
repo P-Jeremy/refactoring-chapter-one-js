@@ -11,14 +11,17 @@ function statement(invoice, plays) {
     currency: 'USD',
     minimumFractionDigits: 2,
   }).format;
-  for (let perf of invoice.performances) {
-    const thisAmount = _amountFor(perf);
 
+  for (let perf of invoice.performances) {
     // add volume credits
     volumeCredits += Math.max(perf.audience - 30, 0);
     // add extra credit for every ten comedy attendees
-    if ('comedy' === _playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
+    if ('comedy' === _playFor(perf).type)
+      volumeCredits += Math.floor(perf.audience / 5);
+  }
 
+  for (let perf of invoice.performances) {
+    const thisAmount = _amountFor(perf);
     // print line for this order
     result += `  ${_playFor(perf).name}: ${format(thisAmount / 100)} (${
       perf.audience
@@ -33,10 +36,10 @@ function statement(invoice, plays) {
     const play = plays[performance.playID];
     return play;
   }
-  
+
   function _amountFor(performance) {
     let result = 0;
-  
+
     switch (_playFor(performance).type) {
       case 'tragedy':
         result = 40000;
@@ -54,8 +57,7 @@ function statement(invoice, plays) {
       default:
         throw new Error(`unknown type: ${_playFor(performance).type}`);
     }
-  
+
     return result;
   }
 }
-
